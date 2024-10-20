@@ -1,0 +1,163 @@
+:PROPERTIES:
+:ID:       a213a3c4-0bff-48c6-92a1-db39b2607a0f
+:END:
+#+title: Redirect to the latest Hashnode blog post using Cloudflare workers
+#+hugo_section: article
+
+
+* Use Case
+
+This is a very trivial usecase, where you need to create an static URL
+to always point to the latest blog post dynamically. The blog in this
+scenario was hosted on [[https://hashnode.com/][Hashnode]] which doesn't provide the
+functionality out of the box but provides a [[https://gql.hashnode.com/][GraphQL]] API which makes it
+possible ([[https://api.hashnode.com/][more info]]).
+
+* Design
+
+In this case [[id:a2d47b30-13a1-4edd-a893-9f48850212e4][Cloudflare]] was used to manage the domain resources, so I
+thought we can utilize [[id:a2d47b30-13a1-4edd-a893-9f48850212e4][Cloudflare]] workers for this purpose.
+
+* Implementation
+
+** Initialize the repository
+
+Use [[id:a2d47b30-13a1-4edd-a893-9f48850212e4][Cloudflare]] wrangler to initialize the repo based of ~wrangler~:
+
+#+begin_src sh
+  npm create cloudflare@latest -- latest-blog-url
+#+end_src
+
+** The logic
+
+#+begin_src javascript
+  async function handleRequest(request) {
+  	const graphqlEndpoint = `https://gql.hashnode.com`;
+
+  	const graphqlQuery = `
+    query Publication( $id: ObjectId="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" ) {
+    publication(id: $id) {
+          isTeam
+          title
+          posts(first: 1) {
+            edges {
+              node {
+                title
+                brief
+                url
+              }
+            }
+          }
+        }
+      }
+    `;
+
+  	const graphqlResponse = await fetch(graphqlEndpoint, {
+  		method: 'POST',
+  		headers: {
+  			'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0',
+  			'Accept': 'application/json, multipart/mixed',
+  			'Accept-Language': 'en-US,en;q=0.5',
+  			'Referer': 'https://gql.hashnode.com/',
+  			'Content-Type': 'application/json',
+  			'gcdn-debug': '1',
+  			'Origin': 'https://gql.hashnode.com',
+  			'DNT': '1',
+  			'Sec-Fetch-Dest': 'empty',
+  			'Sec-Fetch-Mode': 'cors',
+  			'Sec-Fetch-Site': 'same-origin',
+  			'Priority': 'u=0',
+  			'Pragma': 'no-cache',
+  			'Cache-Control': 'no-cache',
+  		},
+  		body: JSON.stringify({ query: graphqlQuery }),
+  		cf: {
+  			cacheTtl: 0,
+  			cacheEverything: false,
+  		},
+  	});
+
+  	const responseData = await graphqlResponse.json();
+
+  	const url = responseData.data.publication.posts.edges[0].node.url;
+  	const statusCode = 303;
+  	const response = new Response(null, {
+  		status: statusCode,
+  		headers: {
+  			Location: url,
+  			'Cache-Control': 'no-cache, no-store, must-revalidate',
+  			Pragma: 'no-cache',
+  			Expires: '0',
+  		},
+  	});
+  	return response;
+  }
+
+  export default {
+  	async fetch(request) {
+  		return handleRequest(request);
+  	},
+  };
+#+end_src
+
+*** Description
++ The query part is quite trivial. The only important thing is I'm
+  using publication ID for the query. In my tests, when using the blog
+  url when I was using a custom domain, was causing a cache of the old
+  response for a longer period of time. To get publication id, you can
+  use the following query on [[https://gql.hashnode.com][Hashnode GraphQL playground]]:
+  #+begin_src graphql
+  query Publication($host: String = "PUBLICATION-URL") {
+   publication(host: $host) {
+    id
+   }
+  }
+#+end_src
++ For the header, I also used all the headers ~gql.hashnode.com~
+  submits. Without this and/or the the publication id, the result
+  wasn't getting updated at all.
++ the ~cf~ section, indicates [[id:a2d47b30-13a1-4edd-a893-9f48850212e4][Cloudflare]] cache to not get
+  engated.
++ I'm using [[id:39d3dd91-2166-4f0d-97d8-4fd6dd0a0ab5][Http Status]] 303, which means see other, and sound a
+  prefect match as I don't want to make this redirect permanent or
+  cached by browser.
+** Deployment
+
+If you haven't logged in:
+#+begin_src sh
+wrangler login
+#+end_src
+
+And then:
+#+begin_src sh
+wrangler deploy
+#+end_src
+
+Also it's possible to connect a [[id:d612a0ff-109d-4d86-936e-7beeacc3689e][GitHub]] repository to the
+[[id:a2d47b30-13a1-4edd-a893-9f48850212e4][Cloudflare]] so it'll automatically pick it up when you
+push something to the repo.
+** Custom Domain
+
+Using routes it's possible to setup a custom domain. Add the following
+to ~wrangler.toml~:
+
+#+begin_src toml
+routes = [
+   { pattern = "domain.tld/new/*", zone_name = "domain.tld" }
+]
+#+end_src
+** [[id:2cd85cb5-decb-4900-a304-e79564e80723][Nix]] Notes
+
+If you are using [[id:66fa3ba9-1948-4970-b02f-3f3fecce5836][NixOS]], you can't run ~wrangler~ command installed with
+~npm~. In this case, either use ~npx~ (update ~package.json~ by prefixing
+~wrangler~ command with ~npx~), or install ~wrangler~ using [[id:2cd85cb5-decb-4900-a304-e79564e80723][Nix]] which I
+did like following in [[id:73a57c7c-309e-407f-aff4-044411d7c33d][Devenv]]:
+
+#+begin_src nix
+  packages =
+    with pkgs;
+    []
+    ++ (with nodePackages; [
+      wrangler
+    ])
+#+end_src

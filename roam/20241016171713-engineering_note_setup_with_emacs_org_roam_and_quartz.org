@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       64679ae8-768d-429a-a14b-381292c19dda
+:ROAM_ALIASES: Shahin
+:END:
+#+title: Engineering Note Setup with Emacs, Org Roam and Quartz
+#+hugo_section: article
+
+[[id:60021eb2-1237-4808-922c-c485d92f7b15][Emacs]]

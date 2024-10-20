@@ -1,0 +1,11 @@
+:PROPERTIES:
+:ID:       a2d47b30-13a1-4edd-a893-9f48850212e4
+:END:
+#+title: Cloudflare
+#+hugo_section: note
+
+[[https://cloudflare.com][Cloudflare]], Inc. is an American company that provides content delivery
+network services, cloud cybersecurity, DDoS mitigation, wide area
+network services, reverse proxies, Domain Name Service, and
+ICANN-accredited [[[https://en.wikipedia.org/wiki/Cloudflare][Source]]].
+

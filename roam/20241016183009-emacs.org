@@ -1,0 +1,17 @@
+:PROPERTIES:
+:ID:       60021eb2-1237-4808-922c-c485d92f7b15
+:END:
+#+title: Emacs
+#+hugo_section: note
+
+In this page I share my daily findings, tips and tricks while living
+in [[https://www.gnu.org/software/emacs/][GNU Emacs]].
+
+* Modern Docs
+[[https://emacsdocs.org/][Emacs Docs]] is providing the documentation of the following services,
+in a more modern interface:
++ Emacs
++ GNU Elisp
++ Org
++ Magit
+  

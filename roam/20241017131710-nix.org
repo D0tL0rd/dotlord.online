@@ -1,0 +1,9 @@
+:PROPERTIES:
+:ID:       2cd85cb5-decb-4900-a304-e79564e80723
+:END:
+#+title: Nix
+#+hugo_section: note
+
+[[https://github.com/nixos/nix][Nix]] is a purely functional programming language which is used to
+develop [[id:2cd85cb5-decb-4900-a304-e79564e80723][Nix]] package manager and [[id:66fa3ba9-1948-4970-b02f-3f3fecce5836][NixOS]].
+

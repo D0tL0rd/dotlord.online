@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       73a57c7c-309e-407f-aff4-044411d7c33d
+:END:
+#+title: Devenv
+#+hugo_section: note
+
+[[https://devenv.sh/][Devenv]] is a fast, declartive, reproducible and composable development
+environment generator using [[id:2cd85cb5-decb-4900-a304-e79564e80723][Nix]].

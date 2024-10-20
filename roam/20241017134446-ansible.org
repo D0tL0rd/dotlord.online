@@ -1,0 +1,31 @@
+:PROPERTIES:
+:ID:       9357eecb-985e-48e5-bc34-c1f345512142
+:END:
+#+title: Ansible
+#+hugo_section: note
+
+Here I share, tips and tricks I learn while working with [[https://www.ansible.com/][Ansible]].
+
+* Run a specific task or group of task
+- First tag the resource
+  #+begin_src yaml
+    tasks:
+
+        - yum: name={{ item }} state=installed
+          with_items:
+             - httpd
+             - memcached
+          tags:
+             - packages
+
+        - template: src=templates/src.j2 dest=/etc/foo.conf
+          tags:
+             - configuration
+  #+end_src
+
+- Then run it using:
+  #+begin_src bash
+    ansible-playbook example.yml --tags "configuration,packages"
+  #+end_src
+
+- Or skip those tags using ~--skip-tags~.

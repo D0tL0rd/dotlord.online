@@ -1,0 +1,8 @@
+:PROPERTIES:
+:ID:       66fa3ba9-1948-4970-b02f-3f3fecce5836
+:END:
+#+title: NixOS
+#+hugo_section: note
+
+[[https://nixos.org/][NixOS]] is a [[id:c16403f2-6172-415e-92ed-1e8ab8c2dcbc][Linux]] based (with unofficial BSD deployment), build with
+[[id:2cd85cb5-decb-4900-a304-e79564e80723][Nix]] programming language and package manager.

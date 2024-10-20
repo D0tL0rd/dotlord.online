@@ -1,0 +1,23 @@
+:PROPERTIES:
+:ID:       c16403f2-6172-415e-92ed-1e8ab8c2dcbc
+:END:
+#+title: Linux
+#+hugo_section: note
+
+Here I list all tips and tricks I learn daily, while working with
+[[https://kernel.org/][Linux]] based systems.
+
+* Set Hostname Permanently
+#+begin_src sh
+hostnamectl set-hostname NEW_HOSTNAME
+#+end_src
+
+* Check Open Ports Using ~nc~
+#+begin_src bash
+# single port
+nc -vz IP PORT
+# Multiple ports
+nc -vz IP PORT1 PORT2 PORT3
+# Range of ports
+nc -vz IP -z 1-100
+#+end_src

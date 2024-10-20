@@ -1,0 +1,17 @@
+:PROPERTIES:
+:ID:       527fb549-d5e0-40ba-8260-668aaf0af030
+:END:
+#+title: AWS CloudWatch
+#+hugo_section: note
+
+Here I collect all tips, tricks and facts I learn daily while working
+with [[https://aws.amazon.com/cloudwatch/][AWS CloudWatch]].
+
+* Biggest Cost Pool
+
+To determine which log group is the biggest one over time create a
+Graphed metric with the following query ([[https://repost.aws/knowledge-center/cloudwatch-logs-bill-increase][More Info]]):
+  
+#+begin_src sql
+  SORT(REMOVE_EMPTY(SEARCH('{AWS/Logs,LogGroupName} MetricName="IncomingBytes"', 'Sum', 2592000)),SUM, DESC)
+#+end_src
