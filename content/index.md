@@ -27,4 +27,3 @@ technology. A day to day so-called software developer who shares no
 interest to follow the ancient ladder of success with empty fancy
 titles, looking up to retire, to only then have the time and energy to
 live, but to his surprise realizes, it's too late!
-
